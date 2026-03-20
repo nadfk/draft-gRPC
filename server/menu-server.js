@@ -43,7 +43,7 @@ function AddMenu(call, callback) {
     }
 }
 
-// bidirectional streaming - live votung 
+// bidirectional streaming - live voting 
 function getVoteResults(sessionId, isFinal = false) {
     const session = voteSessions[sessionId] || { votes: {} };
     return Object.entries(session.votes).map(([menuId, count]) => {
@@ -72,19 +72,18 @@ function broadcastToWatchers(sessionId, isFinal = false) {
 
 function VoteMenu(call) {
     let sessionId = null;
+
     call.on('data', (voteRequest) => {
         const { user_id, menu_id } = voteRequest;
 
-        // Pakai user_id sebagai session identifier simpelnya
         sessionId = sessionId || `session-${user_id}`;
         if (!voteSessions[sessionId]) {
-        voteSessions[sessionId] = { votes: {}, watchers: [] };
+            voteSessions[sessionId] = { votes: {}, watchers: [] };
         }
 
-        // Cek menu valid
         const menuExists = menus.find(m => m.id === menu_id);
         if (!menuExists) {
-        call.write({ menu_id, menu_name: 'Unknown', vote_count: 0, is_final: false });
+            call.write({ menu_id, menu_name: 'Unknown', vote_count: 0, is_final: false });
         return;
         }
         const session = voteSessions[sessionId];
@@ -95,4 +94,45 @@ function VoteMenu(call) {
 
         broadcastToWatchers(sessionId, false);
     });
+
+    call.on('end', () => {
+        if (sessionId) broadcastToWatchers(sessionId, true);
+        call.end();
+    });
+
+    call.on('error', (e) => {
+        console.error('VoteMenu stream error:', e.message);
+    });
 }
+
+function WatchVoteResult(call) {
+    const { sessionId } = call.request;
+
+    if(!voteSessions[sessionId]){
+        voteSessions[sessionId] = { votes: {}, watchers: []};
+    }
+    voteSessions[sessionId].watchers = voteSessions[sessionId].watchers || [];
+    voteSessions[sessionId].watchers.push(call);
+
+    const current = getVoteResults(session_id, false);
+    current.forEach(r => call.write(r));
+
+    call.on('cancelled', () => {
+        const watchers = voteSessions[session_id]?.watchers || [];
+        const idx = watchers.indexOf(call);
+        if(idx !== 1) watchers.splice(idx, 1);
+    });
+}
+
+// start server
+
+const server = new grpc.Server();
+server.addService(proto.MenuService.service, { GetMenu, AddMenu, VoteMenu, WatchVoteResult});
+
+server.bindAsync('0.0.0.0:50051', grpc.ServerCredentials.createInsecure(), (err, port) => {
+    if (err) {
+        console.error('Menu Server gagal start:', err.message);
+        return;
+    }
+    console.log(`Menu Server running on port ${port}`);
+});
