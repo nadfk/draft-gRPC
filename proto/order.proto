@@ -1,0 +1,49 @@
+syntax = "proto3";
+package order;
+
+service OrderService {
+    rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);  // Unary
+    rpc SplitBill (SplitBillRequest) returns (SplitBillResponse);       // Unary
+    rpc TrackOrderStatus (TrackRequest) returns (stream OrderStatus);
+}
+
+message OrderItem {
+    string menu_id = 1;
+    string menu_name = 2;
+    int32 quantity = 3;
+    double price = 4;
+}
+
+message CreateOrderRequest {
+    string user_id = 1;
+    string group_id = 2;
+    repeated OrderItem items = 3;
+}
+
+message CreateOrderResponse {
+    bool success = 1;
+    string order_id = 2;
+    string message = 3;
+}
+
+message SplitBillRequest {
+    string order_id = 1;
+    repeated string user_ids = 2;
+}
+message BillPerUser {
+    string user_id = 1;
+    double amount = 2;
+}
+message SplitBillResponse {
+    string order_id = 1;
+    double total = 2;
+    repeated BillPerUser bills = 3;
+}
+
+message TrackRequest { string order_id = 1; }
+message OrderStatus {
+    string order_id = 1;
+    string status = 2;
+    string message = 3;
+    int64 timestamp = 4;
+}

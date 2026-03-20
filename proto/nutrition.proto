@@ -1,0 +1,36 @@
+syntax = "proto3";
+package nutrition;
+
+service NutritionService {
+    rpc GetNutrition (NutritionRequest) returns (NutritionInfo);  // Unary
+    rpc GetDailySummary (DailySummaryRequest) returns (DailySummary); // Unary
+}
+
+message NutritionRequest { string menu = 1; }
+message NutritionInfo { 
+    string menu_id = 1;
+    string menu_name  = 2;
+    double calories = 3;
+    double protein = 4;
+    double carbs = 5;
+    double fat = 6;
+}
+message DailySummaryRequest {
+    string user_id = 1;
+    string date = 2;
+}
+message DailySummary {
+    string user_id = 1;
+    double total_calories = 2;
+    double calorie_lim = 3;
+    bool is_over_lim = 4;
+}
+message ProgressRequest {
+    string user_id = 1;
+}
+message ProgressUpdate {
+    double current_calories = 1;
+    double calorie_lim = 2;
+    double percentage = 3;
+    string warning_message = 4;
+}

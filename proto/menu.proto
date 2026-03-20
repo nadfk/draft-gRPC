@@ -1,0 +1,40 @@
+syntax = "proto3";
+package menu;
+
+service MenuService {
+    rpc GetMenu (GetMenuRequest) returns (MenuList);         // Unary
+    rpc AddMenu (AddMenuRequest) returns (AddMenuResponse);  // Unary
+    rpc VoteMenut (stream VoteRequest) returns (stream VoteResult); // BiDirectional
+    rpc WatchVoteResult (WatchRequest) returns (stream VoteResult); // Server Streaming
+}
+
+message Menu {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    double price = 4;
+}
+
+message GetMenuRequest {}
+message MenuList { repeated Menu menus = 1; }
+message AddMenuRequest { 
+    string name = 1;
+    string description = 2;
+    double price = 3;
+}
+message AddMenuResponse {
+    bool success = 1;
+    string menu_id = 2;
+    string message = 3;
+}
+message VoteRequest {
+    string user_id = 1;
+    string menu_id = 2;
+}
+message VoteResult {
+    string menu_id = 1;
+    string menu_name = 2;
+    int32 vote_count = 3;
+    bool is_final = 4;
+}
+message WatchRequest { string session = 1; }
