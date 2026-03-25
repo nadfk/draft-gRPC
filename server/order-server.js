@@ -37,7 +37,7 @@ function CreateOrder(call, callback) {
         callback(null, {
             success: true,
             order_id: orderId,
-            message: `order berhasil dibuat! Total: Rp${total.toLocalString('id-ID')}`,
+            message: `order berhasil dibuat! Total: Rp${total.toLocaleString('id-ID')}`,
         });
     } catch (e) {
         callback({code: grpc.status.INTERNAL, message: e.message});
