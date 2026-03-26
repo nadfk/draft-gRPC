@@ -1,9 +1,8 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const { v4: uuidv4 } = require('uuid');
 
-const packageDef = protoLoader.loadSync('proto/menu.proto');
+const packageDef = protoLoader.loadSync('proto/menu.proto', {keepCase: true});
 const proto = grpc.loadPackageDefinition(packageDef).menu;
 
 //=== IN MEMORY STATE
@@ -35,7 +34,7 @@ function AddMenu(call, callback) {
                 message: 'Name and price are required'
             });
         }
-        const newMenu = { id: uuidv4(), name, description, price };
+        const newMenu = { id: `menu-${menus.length + 1}`, name, description, price };
         menus.push(newMenu);
         callback(null, { success: true, menu_id: newMenu.id, message: 'Menu added successfully' });
     } catch (e) {

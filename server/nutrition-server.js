@@ -1,7 +1,7 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const packageDef = protoLoader.loadSync('proto/nutrition.proto');
+const packageDef = protoLoader.loadSync('proto/nutrition.proto', {keepCase: true});
 const proto = grpc.loadPackageDefinition(packageDef).nutrition;
 
 //==In memory state
@@ -20,6 +20,7 @@ const CALORIE_LIMIT = 2000;
 function GetNutrition(call, callback) {
     try {
         const { menu_id } = call.request;
+        console.log(`GetNutrition dipanggil dengan menu_id: ${menu_id}`);
         const data = nutritionData[menu_id];
         if(!data) {
             return callback({

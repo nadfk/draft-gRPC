@@ -6,7 +6,7 @@ service NutritionService {
     rpc GetDailySummary (DailySummaryRequest) returns (DailySummary); // Unary
 }
 
-message NutritionRequest { string menu = 1; }
+message NutritionRequest { string menu_id = 1; }
 message NutritionInfo { 
     string menu_id = 1;
     string menu_name  = 2;

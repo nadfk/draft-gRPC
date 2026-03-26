@@ -2,7 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { v4: uuidv4 } = require('uuid');
 
-const packageDef = protoLoader.loadSync('proto/order.proto');
+const packageDef = protoLoader.loadSync('proto/order.proto', {keepCase: true});
 const proto = grpc.loadPackageDefinition(packageDef).order;
 
 //Internal memory state
