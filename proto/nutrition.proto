@@ -22,8 +22,8 @@ message DailySummaryRequest {
 message DailySummary {
     string user_id = 1;
     double total_calories = 2;
-    double calorie_lim = 3;
-    bool is_over_lim = 4;
+    double calorie_limit = 3;
+    bool is_over_limit = 4;
 }
 message ProgressRequest {
     string user_id = 1;

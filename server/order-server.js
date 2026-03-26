@@ -1,8 +1,9 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
-const packageDef = protoLoader.loadSync('proto/order.proto', {keepCase: true});
+const packageDef = protoLoader.loadSync(path.join(__dirname, '../proto/order.proto'), { keepCase: true} );
 const proto = grpc.loadPackageDefinition(packageDef).order;
 
 //Internal memory state
@@ -15,7 +16,6 @@ const STATUS_FLOW = ['RECEIVED', 'PREPARING', 'READY', 'DELIVERED'];
 function CreateOrder(call, callback) {
     try {
         const { user_id, group_id, items } = call.request;
-
         if (!user_id || !group_id || !items || items.length === 0) {
             return callback({
                 code: grpc.status.INVALID_ARGUMENT,

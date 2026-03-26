@@ -5,7 +5,7 @@ const protoLoader = require('@grpc/proto-loader');
 
 const menuProto = grpc.loadPackageDefinition(protoLoader.loadSync('proto/menu.proto', {keepCase: true})).menu;
 const nutritionProto = grpc.loadPackageDefinition(protoLoader.loadSync('proto/nutrition.proto', {keepCase: true})).nutrition;
-const orderProto = grpc.loadPackageDefinition(protoLoader.loadSync('proto/order.proto', {keepCAse: true})).order;
+const orderProto = grpc.loadPackageDefinition(protoLoader.loadSync('proto/order.proto', {keepCase: true})).order;
 
 //inisialisasi client
 const menuClient = new menuProto.MenuService('localhost:50051', grpc.credentials.createInsecure());

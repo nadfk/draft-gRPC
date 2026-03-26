@@ -20,7 +20,6 @@ const CALORIE_LIMIT = 2000;
 function GetNutrition(call, callback) {
     try {
         const { menu_id } = call.request;
-        console.log(`GetNutrition dipanggil dengan menu_id: ${menu_id}`);
         const data = nutritionData[menu_id];
         if(!data) {
             return callback({
