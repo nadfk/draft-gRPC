@@ -4,6 +4,7 @@ package nutrition;
 service NutritionService {
     rpc GetNutrition (NutritionRequest) returns (NutritionInfo);  // Unary
     rpc GetDailySummary (DailySummaryRequest) returns (DailySummary); // Unary
+    rpc StreamDailyProgress (ProgressRequest) returns (stream ProgressUpdate); // server streaming
 }
 
 message NutritionRequest { string menu_id = 1; }
@@ -30,7 +31,7 @@ message ProgressRequest {
 }
 message ProgressUpdate {
     double current_calories = 1;
-    double calorie_lim = 2;
+    double calorie_limit = 2;
     double percentage = 3;
     string warning_message = 4;
 }

@@ -119,7 +119,7 @@ function testCreateOrder() {
 }
 
 //6. Split bill (Unary)
-function testSplitBill(){
+function testSplitBill(orderId){
     return new Promise((resolve, reject) => {
         divider('Test 6: SplitBill (Unary)');
         orderClient.SplitBill(
@@ -148,7 +148,7 @@ function testTrackOrderStatus(orderId){
         const stream = orderClient.TrackOrderStatus({ order_id: orderId});
 
         stream.on('data', (status)=> {
-            const time = new Date(status.timestamp).toLocaleTimeString('id-ID');
+            const time = new Date(Number(status.timestamp)).toLocaleTimeString('id-ID');
             console.log(`    [${time}] ${status.status} -- ${status.message}`);
         });
         
