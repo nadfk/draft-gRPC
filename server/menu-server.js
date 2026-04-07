@@ -1,7 +1,7 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-const packageDef = protoLoader.loadSync('proto/menu.proto');
+const packageDef = protoLoader.loadSync('proto/menu.proto', {keepCase: true});
 const proto = grpc.loadPackageDefinition(packageDef).menu;
 
 function pick(req, camel, snake) {

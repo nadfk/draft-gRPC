@@ -2,7 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { randomUUID } = require('crypto');
 
-const packageDef = protoLoader.loadSync('proto/order.proto');
+const packageDef = protoLoader.loadSync(path.join(__dirname, '../proto/order.proto'), { keepCase: true} );
 const proto = grpc.loadPackageDefinition(packageDef).order;
 
 // Load nutrition proto untuk memanggil AddUserCalories
