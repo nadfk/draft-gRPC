@@ -4,7 +4,7 @@ package menu;
 service MenuService {
     rpc GetMenu (GetMenuRequest) returns (MenuList);         // Unary
     rpc AddMenu (AddMenuRequest) returns (AddMenuResponse);  // Unary
-    rpc VoteMenut (stream VoteRequest) returns (stream VoteResult); // BiDirectional
+    rpc VoteMenu (stream VoteRequest) returns (stream VoteResult); // BiDirectional
     rpc WatchVoteResult (WatchRequest) returns (stream VoteResult); // Server Streaming
 }
 
@@ -30,11 +30,17 @@ message AddMenuResponse {
 message VoteRequest {
     string user_id = 1;
     string menu_id = 2;
+    string session_id = 3;
 }
 message VoteResult {
     string menu_id = 1;
     string menu_name = 2;
     int32 vote_count = 3;
     bool is_final = 4;
+    string event_type = 5;
+    string actor_user_id = 6;
+    string actor_menu_id = 7;
+    string actor_menu_name = 8;
+    int32 total_voters = 9;
 }
-message WatchRequest { string session = 1; }
+message WatchRequest { string session_id = 1; }
