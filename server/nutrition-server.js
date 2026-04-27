@@ -2,7 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { nutritionData, userDailyLog, CALORIE_LIMIT, log } = require('./nutrition-helpers');
 
-const packageDef = protoLoader.loadSync('proto/nutrition.proto');
+const packageDef = protoLoader.loadSync('proto/nutrition.proto', {keepCase: true});
 const proto = grpc.loadPackageDefinition(packageDef).nutrition;
 
 function pick(req, camel, snake) {

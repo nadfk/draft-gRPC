@@ -1,7 +1,11 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
+<<<<<<< HEAD
 const packageDef = protoLoader.loadSync('proto/menu.proto');
+=======
+const packageDef = protoLoader.loadSync('proto/menu.proto', {keepCase: true});
+>>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
 const proto = grpc.loadPackageDefinition(packageDef).menu;
 
 function pick(req, camel, snake) {
@@ -12,7 +16,11 @@ function log(message) {
     console.log(`[menu] ${message}`);
 }
 
+<<<<<<< HEAD
 // IN MEMORY STATE
+=======
+//=== IN MEMORY STATE
+>>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
 const menus = [
     { id: 'menu-1', name: 'Nasi Goreng', description: 'Nasi goreng dengan telur dan sayuran', price: 15000 },
     { id: 'menu-2', name: 'Mie Ayam', description: 'Mie ayam dengan kuah kaldu dan potongan ayam', price: 12000 },
@@ -33,7 +41,11 @@ function getNextMenuId() {
     return `menu-${maxId + 1}`;
 }
 
+<<<<<<< HEAD
 // IMPLEMENTASI SERVICE
+=======
+//=== IMPLEMENTASI SERVICE
+>>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
 // unary - ambil menu dan add menu
 function GetMenu(call, callback) {
     try {
@@ -115,6 +127,18 @@ function broadcastToWatchers(sessionId, isFinal = false) {
         });
         // JANGAN tutup watcher - biarkan tetap terbuka untuk voters berikutnya
         // if (isFinal) watchStream.end();
+    });
+}
+
+function broadcastTallyToWatchers(sessionId) {
+    const session = voteSessions[sessionId];
+    if (!session) return;
+    const results = getVoteResults(sessionId, false);
+    session.watchers = session.watchers || [];
+    session.watchers.forEach((watchStream) => {
+        results.forEach((r) => {
+            try { watchStream.write(r); } catch (e) {}
+        });
     });
 }
 
