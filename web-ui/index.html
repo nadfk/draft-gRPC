@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gRPC Master Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1>gRPC Master Console</h1>
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="connection-status">Connecting...</span>
+        </div>
+      </header>
+      
+      <main class="dashboard-grid">
+        <!-- LEFT COLUMN: Server Push visualizers -->
+        <div class="visualizers-col">
+            <!-- Event-Driven Component 1: Live Voting Chart -->
+            <section class="card widget-voting">
+                <h2>Live Voting Monitor</h2>
+                <div class="widget-content">
+                    <div id="voting-chart" class="voting-chart"></div>
+                </div>
+            </section>
+
+            <!-- Event-Driven Component 2: Nutrition Gauge Indicator -->
+            <section class="card widget-nutrition">
+                <h2>Daily Nutrition Progress</h2>
+                <div class="widget-content gauge-container">
+                    <div class="gauge">
+                        <svg viewBox="0 0 100 50" class="gauge-svg">
+                            <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                            <path id="gauge-fill" class="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" stroke-dasharray="125" stroke-dashoffset="125" />
+                        </svg>
+                        <div class="gauge-value" id="nutrition-text">0%</div>
+                    </div>
+                    <div id="nutrition-warning" class="nutrition-warning p-hidden">
+                        You are approaching your calorie limit!
+                    </div>
+                </div>
+            </section>
+
+            <!-- Event-Driven Component 4: Live Order Tracker (New) -->
+            <section id="widget-order-status" class="card widget-order-status p-hidden">
+                <h2>Live Order Tracker</h2>
+                <div class="widget-content">
+                    <div class="tracker-info">
+                        <span id="track-id-display" class="text-sm text-muted">Order: -</span>
+                        <div id="track-status-badge" class="status-badge">WAITING</div>
+                    </div>
+                    <div class="stepper">
+                        <div class="step" data-status="RECEIVED"></div>
+                        <div class="step" data-status="PREPARING"></div>
+                        <div class="step" data-status="READY"></div>
+                        <div class="step" data-status="DELIVERED"></div>
+                    </div>
+                    <p id="track-message" class="text-xs text-muted text-center" style="margin-top: 0.5rem">-</p>
+                </div>
+            </section>
+
+            <!-- Event-Driven Component 3: Action Log & Server-Initiated Notifications -->
+            <section class="card widget-activity">
+                <h2>Activity Log</h2>
+                <div class="widget-content">
+                    <ul id="activity-log" class="activity-log">
+                        <li class="log-item default-log">Waiting for server events...</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- RIGHT COLUMN: Interaction Forms & Commands -->
+        <div class="interactions-col">
+            <section class="card widget-commands">
+                <div class="tabs">
+                    <button class="tab-btn active" data-target="tab-menu">Menu & Nutrition</button>
+                    <button class="tab-btn" data-target="tab-order">Orders & Billing</button>
+                    <button class="tab-btn" data-target="tab-streams">Subscriptions & Voting</button>
+                </div>
+
+                <div class="tab-content" id="tab-menu" style="display: flex;">
+                    <h3>1. View Menu</h3>
+                    <button id="btn-get-menu" class="btn primary mb-1">Load Menus</button>
+                    <div id="menu-list" class="scroll-box mb-2">No menus loaded.</div>
+
+                    <hr>
+                    <h3>2. Add Menu & Nutrition</h3>
+                    <form id="form-add-menu" class="grid-form mb-2">
+                        <input type="text" id="inp-menu-name" placeholder="Name (e.g Ayam Bakar)" required>
+                        <input type="text" id="inp-menu-desc" placeholder="Description" required>
+                        <input type="number" id="inp-menu-price" placeholder="Price" required>
+                        <hr class="full-width">
+                        <label class="full-width text-muted">Nutrition Data (Optional)</label>
+                        <input type="number" id="inp-nut-cal" placeholder="Calories (e.g 500)">
+                        <input type="number" id="inp-nut-pro" placeholder="Protein (g)">
+                        <input type="number" id="inp-nut-carb" placeholder="Carbs (g)">
+                        <input type="number" id="inp-nut-fat" placeholder="Fat (g)">
+                        <button type="submit" class="btn primary full-width mt-1">Submit Menu</button>
+                    </form>
+
+                    <hr>
+                    <h3>3. Check Specific Nutrition</h3>
+                    <div class="flex-row mb-2">
+                        <input type="text" id="inp-check-nut-menu" placeholder="Menu ID">
+                        <button id="btn-check-nut" class="btn secondary">Check</button>
+                    </div>
+
+                    <hr>
+                    <h3>4. Daily Summary</h3>
+                    <div class="grid-form mb-2">
+                        <input type="text" id="inp-sum-user" placeholder="User ID" value="user-001">
+                        <button id="btn-daily-sum" class="btn secondary full-width mt-1">Get Summary (Today)</button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-order" style="display: none;">
+                    <h3>5. Create Order</h3>
+                    <div class="grid-form mb-2">
+                        <input type="text" id="inp-order-user" placeholder="User ID" value="user-001" required>
+                        <input type="text" id="inp-order-group" placeholder="Group ID" value="group-A" required>
+                        <label class="full-width text-muted">Items to Order</label>
+                        <div id="order-items-list" class="full-width flex-col gap-1">
+                            <div class="flex-row item-row">
+                                <input type="text" placeholder="Menu ID" class="inp-order-item" value="menu-1">
+                                <input type="number" placeholder="Qty" value="1" class="inp-order-qty" style="width: 80px">
+                                <button type="button" class="btn secondary remove-item-btn">X</button>
+                            </div>
+                        </div>
+                        <button type="button" id="btn-add-item-row" class="btn secondary full-width">+ Add Item</button>
+                        <button type="button" id="btn-create-order" class="btn primary full-width mt-1">Create Order</button>
+                    </div>
+
+                    <hr>
+                    <h3>6. Split Bill</h3>
+                    <div class="grid-form mb-2">
+                        <input type="text" id="inp-split-order" placeholder="Order ID" class="full-width" required>
+                        <input type="text" id="inp-split-users" placeholder="User IDs (comma separated)" class="full-width" value="user-001,user-002" required>
+                        <button type="button" id="btn-split-bill" class="btn secondary full-width mt-1">Split Bill</button>
+                    </div>
+                    <div id="split-bill-result" class="scroll-box alert-box" style="display:none"></div>
+                </div>
+
+                <div class="tab-content" id="tab-streams" style="display: none;">
+                    <h3>7. Watch Live Voting</h3>
+                    <div class="flex-row mb-2">
+                        <input type="text" id="inp-watch-session" placeholder="Session ID" value="room-komunitas-1">
+                        <button id="btn-watch-vote" class="btn secondary">Watch</button>
+                    </div>
+
+                    <hr>
+                    <h3>10. Cast a Vote</h3>
+                    <div class="grid-form mb-2">
+                        <input type="text" id="inp-vote-user" placeholder="User ID" value="user-001">
+                        <input type="text" id="inp-vote-session" placeholder="Session ID" value="room-komunitas-1">
+                        <div class="full-width flex-row mt-1">
+                            <select id="inp-vote-menu" class="full-width">
+                                <!-- Populated after getMenu -->
+                                <option value="">Load Menus first...</option>
+                            </select>
+                            <button id="btn-vote" class="btn primary">Vote</button>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h3>8. Stream Daily Progress</h3>
+                    <div class="flex-row mb-2">
+                        <input type="text" id="inp-stream-nut" placeholder="User ID" value="user-001">
+                        <button id="btn-stream-nut" class="btn secondary">Subscribe</button>
+                    </div>
+
+                    <hr>
+                    <h3>9. Track Order Status</h3>
+                    <div class="flex-row mb-2">
+                        <input type="text" id="inp-track-order" placeholder="Enter valid Order ID">
+                        <button id="btn-track-order" class="btn secondary">Track</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

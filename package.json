@@ -7,7 +7,8 @@
     "menu": "node server/menu-server.js",
     "nutrition": "node server/nutrition-server.js",
     "client": "node client/client.js",
-    "order": "node server/order-server.js"
+    "order": "node server/order-server.js",
+    "gateway": "node server/websocket-gateway.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
   "dependencies": {
     "@grpc/grpc-js": "^1.14.3",
     "@grpc/proto-loader": "^0.8.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "ws": "^8.20.0"
   }
 }

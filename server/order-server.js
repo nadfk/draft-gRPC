@@ -2,11 +2,11 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { randomUUID } = require('crypto');
 
-const packageDef = protoLoader.loadSync(path.join(__dirname, '../proto/order.proto'), { keepCase: true} );
+const packageDef = protoLoader.loadSync('proto/order.proto', { keepCase: true });
 const proto = grpc.loadPackageDefinition(packageDef).order;
 
 // Load nutrition proto untuk memanggil AddUserCalories
-const nutritionPackageDef = protoLoader.loadSync('proto/nutrition.proto');
+const nutritionPackageDef = protoLoader.loadSync('proto/nutrition.proto', { keepCase: true });
 const nutritionProto = grpc.loadPackageDefinition(nutritionPackageDef).nutrition;
 const nutritionClient = new nutritionProto.NutritionService(
     'localhost:50052',
@@ -24,7 +24,7 @@ function log(message) {
 // Helper untuk panggil gRPC AddUserCalories (unary call as promise)
 function callAddUserCalories(userId, menuId) {
     return new Promise((resolve, reject) => {
-        const request = { userId, menuId };
+        const request = { user_id: userId, menu_id: menuId };
         log(`Debug: sending AddUserCalories request: ${JSON.stringify(request)}`);
         nutritionClient.AddUserCalories(request, (err, response) => {
             if (err) reject(err);
@@ -81,7 +81,7 @@ function CreateOrder(call, callback) {
             log(`CreateOrder success -> orderId=${orderId} total=${total} items=${items.length}`);
             callback(null, {
                 success: true,
-                orderId,
+                order_id: orderId,
                 message: `order berhasil dibuat! Total: Rp${total.toLocaleString('id-ID')}`,
             });
         } catch (e) {
@@ -120,9 +120,9 @@ function SplitBill(call, callback) {
         log(`SplitBill success -> orderId=${orderId} total=${order.total} perPerson=${perPerson}`);
 
         callback(null, {
-            orderId,
             total: order.total,
-            bills,
+            bills: bills,
+            order_id: orderId
         });
     } catch(e){
         log(`SplitBill error -> ${e.message}`);
@@ -149,7 +149,7 @@ function TrackOrderStatus(call) {
     let currentStatusIndex = STATUS_FLOW.indexOf(order.status);
 
     call.write({
-        orderId,
+        order_id: orderId,
         status: STATUS_FLOW[currentStatusIndex],
         message: `Status terkini: '${STATUS_FLOW[currentStatusIndex]}'`,
         timestamp: Date.now(),
@@ -177,8 +177,8 @@ function TrackOrderStatus(call) {
 
         try {
             call.write({
-                orderId,
-                status,
+                order_id: orderId,
+                status: status,
                 message: messages[status] || status,
                 timestamp: Date.now(),
             });

@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-=======
 // Shared nutrition state dan helper functions
 // Digunakan oleh nutrition-server.js dan order-server.js
-
->>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
 const nutritionData = {
     'menu-1': { menu_name: 'Nasi Goreng', calories: 500, protein: 15, carbs: 70, fat: 18 },
     'menu-2': { menu_name: 'Mie Ayam', calories: 600, protein: 17, carbs: 85, fat: 14 },

@@ -2,7 +2,7 @@ const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 const { nutritionData, userDailyLog, CALORIE_LIMIT, log } = require('./nutrition-helpers');
 
-const packageDef = protoLoader.loadSync('proto/nutrition.proto', {keepCase: true});
+const packageDef = protoLoader.loadSync('proto/nutrition.proto', { keepCase: true });
 const proto = grpc.loadPackageDefinition(packageDef).nutrition;
 
 function pick(req, camel, snake) {
@@ -24,7 +24,7 @@ function GetNutrition(call, callback) {
             });
         }
         log(`GetNutrition success -> menuId=${menuId} calories=${data.calories}`);
-        callback(null, { menuId, ...data });
+        callback(null, { menu_id: menuId, ...data });
     } catch(e) {
         log(`GetNutrition error -> ${e.message}`);
         callback({ code: grpc.status.INTERNAL, message: e.message});
@@ -101,10 +101,10 @@ function GetDailySummary(call, callback) {
         log(`GetDailySummary result -> userId=${userId} totalCalories=${totalCalories} limit=${CALORIE_LIMIT} over=${isOverLimit}`);
 
         callback(null, {
-            userId,
-            totalCalories,
-            calorieLimit: CALORIE_LIMIT,
-            isOverLimit,
+            user_id: userId,
+            total_calories: totalCalories,
+            calorie_limit: CALORIE_LIMIT,
+            is_over_limit: isOverLimit,
         });
     } catch(e) {
         log(`GetDailySummary error -> ${e.message}`);
@@ -141,10 +141,10 @@ function StreamDailyProgress(call) {
 
         try {
             call.write({
-                currentCalories: totalCalories,
-                calorieLimit: CALORIE_LIMIT,
+                current_calories: totalCalories,
+                calorie_limit: CALORIE_LIMIT,
                 percentage: parseFloat(percentage.toFixed(2)),
-                warningMessage,
+                warning_message: warningMessage,
             });
             log(`StreamDailyProgress tick -> userId=${userId} calories=${totalCalories} percentage=${percentage.toFixed(2)} warning="${warningMessage}"`);
         } catch (e) {
@@ -198,7 +198,7 @@ function AddUserCalories(call, callback) {
         callback(null, {
             success: true,
             message: `Kalori untuk ${menuId} berhasil ditambahkan`,
-            totalCalories: userDailyLog[key].totalCalories,
+            total_calories: userDailyLog[key].totalCalories,
         });
     } catch (e) {
         log(`AddUserCalories error -> ${e.message}`);

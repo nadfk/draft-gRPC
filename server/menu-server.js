@@ -1,11 +1,7 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
-<<<<<<< HEAD
-const packageDef = protoLoader.loadSync('proto/menu.proto');
-=======
-const packageDef = protoLoader.loadSync('proto/menu.proto', {keepCase: true});
->>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
+const packageDef = protoLoader.loadSync('proto/menu.proto', { keepCase: true });
 const proto = grpc.loadPackageDefinition(packageDef).menu;
 
 function pick(req, camel, snake) {
@@ -16,11 +12,7 @@ function log(message) {
     console.log(`[menu] ${message}`);
 }
 
-<<<<<<< HEAD
-// IN MEMORY STATE
-=======
 //=== IN MEMORY STATE
->>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
 const menus = [
     { id: 'menu-1', name: 'Nasi Goreng', description: 'Nasi goreng dengan telur dan sayuran', price: 15000 },
     { id: 'menu-2', name: 'Mie Ayam', description: 'Mie ayam dengan kuah kaldu dan potongan ayam', price: 12000 },
@@ -41,11 +33,7 @@ function getNextMenuId() {
     return `menu-${maxId + 1}`;
 }
 
-<<<<<<< HEAD
-// IMPLEMENTASI SERVICE
-=======
 //=== IMPLEMENTASI SERVICE
->>>>>>> 71debea487c3b7627c26e4d29fd99daeebdb3f7d
 // unary - ambil menu dan add menu
 function GetMenu(call, callback) {
     try {
@@ -69,7 +57,7 @@ function AddMenu(call, callback) {
         const newMenu = { id: getNextMenuId(), name, description, price };
         menus.push(newMenu);
         log(`AddMenu success -> id=${newMenu.id} totalMenus=${menus.length}`);
-        callback(null, { success: true, menuId: newMenu.id, message: 'Menu added successfully' });
+        callback(null, { success: true, menu_id: newMenu.id, message: 'Menu added successfully' });
     } catch (e) {
         log(`AddMenu error -> ${e.message}`);
         callback({ code: grpc.status.INTERNAL, message: e.message });
@@ -83,12 +71,12 @@ function getVoteResults(sessionId, isFinal = false) {
     return Object.entries(session.votes).map(([menuId, count]) => {
         const menu = menus.find(m => m.id === menuId);
         return {
-            menuId,
-            menuName: menu ? menu.name : 'Unknown',
-            voteCount: count,
-            isFinal,
-            eventType: 'TALLY',
-            totalVoters,
+            menu_id: menuId,
+            menu_name: menu ? menu.name : 'Unknown',
+            vote_count: count,
+            is_final: isFinal,
+            event_type: 'TALLY',
+            total_voters: totalVoters,
         };
     });
 }
@@ -127,18 +115,6 @@ function broadcastToWatchers(sessionId, isFinal = false) {
         });
         // JANGAN tutup watcher - biarkan tetap terbuka untuk voters berikutnya
         // if (isFinal) watchStream.end();
-    });
-}
-
-function broadcastTallyToWatchers(sessionId) {
-    const session = voteSessions[sessionId];
-    if (!session) return;
-    const results = getVoteResults(sessionId, false);
-    session.watchers = session.watchers || [];
-    session.watchers.forEach((watchStream) => {
-        results.forEach((r) => {
-            try { watchStream.write(r); } catch (e) {}
-        });
     });
 }
 
