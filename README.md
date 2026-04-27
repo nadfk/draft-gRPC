@@ -1,7 +1,10 @@
 jalanin backend:
-`npm run menu`\n
-`npm run nutrition`\n
-`npm run order`\n
+`npm run menu`
+
+`npm run nutrition`
+
+`npm run order`
+
 `npm run gateway`
 
 terus jalanin frontend:
