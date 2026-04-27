@@ -7,5 +7,5 @@ jalanin backend:
 
 `npm run gateway`
 
-terus jalanin frontend:
+terus masuk ke folder web-ui buat jalanin frontend:
 `npm run dev`
